@@ -19,7 +19,7 @@ func main() {
 	for {
 		var firstName string
 		var lastName string
-		var userEmail string
+		var email string
 		var userTickets uint
 
 		// Ask the user for their information
@@ -31,19 +31,24 @@ func main() {
 		fmt.Scan(&lastName)
 
 		fmt.Println("Enter your email")
-		fmt.Scan(&userEmail)
+		fmt.Scan(&email)
 
 		fmt.Println("How many tickets do you want to order?")
-
 		fmt.Scan(&userTickets)
-		if userTickets <= remainingTickets {
+
+		isValidName := len(firstName) >= 2 && len(lastName) >= 2
+		isValidEmail := strings.Contains(email, "@")
+		isValidTicketsNumber := userTickets > 0 && userTickets <= remainingTickets
+
+		if isValidEmail && isValidName && isValidTicketsNumber {
 			remainingTickets = remainingTickets - userTickets
 			bookings = append(bookings, firstName+" "+lastName)
 
-			fmt.Printf(" Hi! %v %v, thank you for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, userEmail)
+			fmt.Printf(" Hi! %v %v, thank you for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
 
 			fmt.Printf("%v tickets are left for %v\n", remainingTickets, conferenceName)
 
+			// Extracting first name from bookings slice
 			firstNames := []string{}
 			for _, booking := range bookings {
 				var names = strings.Fields(booking)
@@ -59,7 +64,18 @@ func main() {
 			}
 
 		} else {
-			fmt.Printf(" Sorry only %v tickets available. You can't book %v\n", remainingTickets, userTickets)
+			if !isValidName {
+				fmt.Println(" Sorry the first Name or last name is too short, Please enter a valid input")
+			}
+
+			if !isValidEmail {
+				fmt.Println(" Sorry the email entered is invalid, Please enter a valid email")
+			}
+
+			if !isValidTicketsNumber {
+				fmt.Println(" Sorry the number you entered is invalid, Please enter a valid number")
+			}
+
 			continue
 		}
 
