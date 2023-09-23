@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/text/cases"
 )
 
 func main() {
@@ -75,10 +77,24 @@ func main() {
 			if !isValidTicketsNumber {
 				fmt.Println(" Sorry the number you entered is invalid, Please enter a valid number")
 			}
-
-			continue
 		}
-
+		
 	}
 
+	city : = "London"
+
+		switch city {
+		case "New york":
+			// Here we want to execute code for booking tickets in new york
+		case "Singapore", "Hong Kong":
+			// Here we want to execute code for booking tickets in Singapor
+		case "London", "Berlin":
+			// Here we want to execute code for booking tickets in london and berlin
+		case "Mexico City":
+			// Some code here
+		default: 
+		fmt.Print("No valid value selected")
+		}
+		
+	}
 }
