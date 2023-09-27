@@ -5,9 +5,15 @@ import (
 	"strings"
 )
 
-func greetUsers(confName string, confTicket uint, remainingTickets uint) {
-	fmt.Printf("Welcome to our %v booking application\n", confName)
-	fmt.Printf("We have a total of %v Tickets and %v are still available\n", confTicket, remainingTickets)
+const conferenceTickets uint = 50
+
+var conferenceName = "Go Conference"
+var remainingTickets uint = 50
+var bookings = []string{} // Ulternative way of creating a slice
+
+func greetUsers() {
+	fmt.Printf("Welcome to our %v booking application\n", conferenceName)
+	fmt.Printf("We have a total of %v Tickets and %v are still available\n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your tickets here to attend")
 }
 func getFirstNames(bookings []string) []string {
@@ -15,6 +21,7 @@ func getFirstNames(bookings []string) []string {
 	for _, booking := range bookings {
 		var names = strings.Fields(booking)
 		firstNames = append(firstNames, names[0])
+
 	}
 	return firstNames
 }
@@ -38,21 +45,26 @@ func askUserInfos() (string, string, string, uint) {
 
 	return firstName, lastName, email, userTickets
 }
-func validateUserInput(firstName string, lastName string, email string, userTickets uint, remainingTickets uint) (bool, bool, bool) {
+func validateUserInput(firstName string, lastName string, email string, userTickets uint) (bool, bool, bool) {
 	isValidName := len(firstName) >= 2 && len(lastName) >= 2
 	isValidEmail := strings.Contains(email, "@")
 	isValidTicketsNumber := userTickets > 0 && userTickets <= remainingTickets
 
 	return isValidName, isValidEmail, isValidTicketsNumber
 }
+func bookTicket(userTickets uint, firstName string, lastName string, email string) {
+	remainingTickets = remainingTickets - userTickets
+	bookings = append(bookings, firstName+" "+lastName)
+
+	fmt.Printf(" Hi! %v %v, thank you for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
+
+	fmt.Printf("%v tickets are left for %v\n", remainingTickets, conferenceName)
+}
 
 func main() {
-	conferenceName := "Go Conference"
-	const conferenceTickets uint = 50
-	var remainingTickets uint = 50
-	bookings := []string{} // Ulternative way of creating a slice
 
-	greetUsers(conferenceName, conferenceTickets, remainingTickets)
+	greetUsers()
+	//firstNames := []string{}
 
 	//Keep asking for a new booking after one booking is done
 	for {
@@ -61,15 +73,12 @@ func main() {
 		firstName, lastName, email, userTickets := askUserInfos()
 
 		//Validating user input
-		isValidName, isValidEmail, isValidTicketsNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+		isValidName, isValidEmail, isValidTicketsNumber := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidEmail && isValidName && isValidTicketsNumber {
-			remainingTickets = remainingTickets - userTickets
-			bookings = append(bookings, firstName+" "+lastName)
-
-			fmt.Printf(" Hi! %v %v, thank you for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
-
-			fmt.Printf("%v tickets are left for %v\n", remainingTickets, conferenceName)
+			bookTicket(userTickets, firstName, lastName, email)
+			// Add the first name to the slice
+			//firstNames := append(firstNames, firstName)
 
 			// Call function printFirtNames
 			firstNames := getFirstNames(bookings)
@@ -80,6 +89,7 @@ func main() {
 				fmt.Println("Our conference is booked out. please come back next year.")
 				break
 			}
+			//fmt.Printf("List of first names who booked tickets are: %v\n", firstNames)
 
 		} else {
 			if !isValidName {
