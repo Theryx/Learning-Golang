@@ -3,28 +3,19 @@ package main
 import (
 	"Booking_app/helper"
 	"fmt"
-	"strings"
+	"strconv"
 )
 
 const conferenceTickets uint = 50
 
 var conferenceName = "Go Conference"
 var remainingTickets uint = 50
-var bookings = []string{} // Ulternative way of creating a slice
+var bookings = make([]map[string]string, 0) //Bookings, is where we store user info and we and we start by initialising a list of maps
 
 func greetUsers() {
 	fmt.Printf("Welcome to our %v booking application\n", conferenceName)
 	fmt.Printf("We have a total of %v Tickets and %v are still available\n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your tickets here to attend")
-}
-func getFirstNames(bookings []string) []string {
-	firstNames := []string{}
-	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
-
-	}
-	return firstNames
 }
 func askUserInfos() (string, string, string, uint) {
 	var firstName string
@@ -46,14 +37,31 @@ func askUserInfos() (string, string, string, uint) {
 
 	return firstName, lastName, email, userTickets
 }
-
 func bookTicket(userTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	//Creating a map for our users
+	var userData = make(map[string]string) //This is an empty map
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData)
+
+	fmt.Printf("List of bookings is %v\n", bookings)
 
 	fmt.Printf(" Hi! %v %v, thank you for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
 
 	fmt.Printf("%v tickets are left for %v\n", remainingTickets, conferenceName)
+}
+func getFirstNames() []string {
+	firstNames := []string{}
+	for _, booking := range bookings {
+		firstNames = append(firstNames, booking["firstName"])
+
+	}
+	return firstNames
 }
 
 func main() {
@@ -73,8 +81,8 @@ func main() {
 			bookTicket(userTickets, firstName, lastName, email)
 
 			// Call function printFirtNames
-			firstNames := getFirstNames(bookings)
-			fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
+			//firstNames := getFirstNames(bookings)
+			//fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
 
 			if remainingTickets == 0 {
 				// End the program
