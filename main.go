@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Booking_app/helper"
 	"fmt"
 	"strings"
 )
@@ -45,13 +46,7 @@ func askUserInfos() (string, string, string, uint) {
 
 	return firstName, lastName, email, userTickets
 }
-func validateUserInput(firstName string, lastName string, email string, userTickets uint) (bool, bool, bool) {
-	isValidName := len(firstName) >= 2 && len(lastName) >= 2
-	isValidEmail := strings.Contains(email, "@")
-	isValidTicketsNumber := userTickets > 0 && userTickets <= remainingTickets
 
-	return isValidName, isValidEmail, isValidTicketsNumber
-}
 func bookTicket(userTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
 	bookings = append(bookings, firstName+" "+lastName)
@@ -64,7 +59,6 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 func main() {
 
 	greetUsers()
-	//firstNames := []string{}
 
 	//Keep asking for a new booking after one booking is done
 	for {
@@ -73,12 +67,10 @@ func main() {
 		firstName, lastName, email, userTickets := askUserInfos()
 
 		//Validating user input
-		isValidName, isValidEmail, isValidTicketsNumber := validateUserInput(firstName, lastName, email, userTickets)
+		isValidName, isValidEmail, isValidTicketsNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		if isValidEmail && isValidName && isValidTicketsNumber {
 			bookTicket(userTickets, firstName, lastName, email)
-			// Add the first name to the slice
-			//firstNames := append(firstNames, firstName)
 
 			// Call function printFirtNames
 			firstNames := getFirstNames(bookings)
