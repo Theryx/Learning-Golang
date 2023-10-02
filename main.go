@@ -3,14 +3,20 @@ package main
 import (
 	"Booking_app/helper"
 	"fmt"
-	"strconv"
 )
 
 const conferenceTickets uint = 50
 
 var conferenceName = "Go Conference"
 var remainingTickets uint = 50
-var bookings = make([]map[string]string, 0) //Bookings, is where we store user info and we and we start by initialising a list of maps
+var bookings = make([]UserData, 0)
+
+type UserData struct {
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets uint
+}
 
 func greetUsers() {
 	fmt.Printf("Welcome to our %v booking application\n", conferenceName)
@@ -40,12 +46,12 @@ func askUserInfos() (string, string, string, uint) {
 func bookTicket(userTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
 
-	//Creating a map for our users
-	var userData = make(map[string]string) //This is an empty map
-	userData["firstName"] = firstName
-	userData["lastName"] = lastName
-	userData["email"] = email
-	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+	var userData = UserData{
+		firstName:       firstName,
+		lastName:        lastName,
+		email:           email,
+		numberOfTickets: userTickets,
+	}
 
 	bookings = append(bookings, userData)
 
@@ -58,7 +64,7 @@ func bookTicket(userTickets uint, firstName string, lastName string, email strin
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		firstNames = append(firstNames, booking["firstName"])
+		firstNames = append(firstNames, booking.firstName)
 
 	}
 	return firstNames
@@ -81,8 +87,8 @@ func main() {
 			bookTicket(userTickets, firstName, lastName, email)
 
 			// Call function printFirtNames
-			//firstNames := getFirstNames(bookings)
-			//fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
+			firstNames := getFirstNames()
+			fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
 
 			if remainingTickets == 0 {
 				// End the program
