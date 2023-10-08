@@ -69,6 +69,12 @@ func getFirstNames() []string {
 	}
 	return firstNames
 }
+func sendTicket(userTickets uint, firstNames string, lastName string, email string) {
+	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstNames, lastName)
+	fmt.Println("....................................")
+	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, email)
+	fmt.Println("....................................")
+}
 
 func main() {
 
@@ -85,6 +91,7 @@ func main() {
 
 		if isValidEmail && isValidName && isValidTicketsNumber {
 			bookTicket(userTickets, firstName, lastName, email)
+			sendTicket(userTickets, firstName, lastName, email)
 
 			// Call function printFirtNames
 			firstNames := getFirstNames()
@@ -107,7 +114,7 @@ func main() {
 			}
 
 			if !isValidTicketsNumber {
-				fmt.Println(" Sorry the number you entered is invalid, Please enter a valid number")
+				fmt.Printf(" Sorry the number you entered is invalid, Please enter a valid number")
 			}
 		}
 
