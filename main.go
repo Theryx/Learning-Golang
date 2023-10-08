@@ -3,6 +3,8 @@ package main
 import (
 	"Booking_app/helper"
 	"fmt"
+	"sync"
+	"time"
 )
 
 const conferenceTickets uint = 50
@@ -70,54 +72,56 @@ func getFirstNames() []string {
 	return firstNames
 }
 func sendTicket(userTickets uint, firstNames string, lastName string, email string) {
+	time.Sleep(10 * time.Second)
 	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstNames, lastName)
-	fmt.Println("....................................")
+	fmt.Println("\n....................................")
 	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, email)
 	fmt.Println("....................................")
+	wg.Done()
 }
+
+var wg = sync.WaitGroup{}
 
 func main() {
 
 	greetUsers()
 
 	//Keep asking for a new booking after one booking is done
-	for {
 
-		// Ask the user for their information
-		firstName, lastName, email, userTickets := askUserInfos()
+	// Ask the user for their information
+	firstName, lastName, email, userTickets := askUserInfos()
 
-		//Validating user input
-		isValidName, isValidEmail, isValidTicketsNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+	//Validating user input
+	isValidName, isValidEmail, isValidTicketsNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
-		if isValidEmail && isValidName && isValidTicketsNumber {
-			bookTicket(userTickets, firstName, lastName, email)
-			sendTicket(userTickets, firstName, lastName, email)
+	if isValidEmail && isValidName && isValidTicketsNumber {
+		bookTicket(userTickets, firstName, lastName, email)
+		wg.Add(1)
+		go sendTicket(userTickets, firstName, lastName, email)
 
-			// Call function printFirtNames
-			firstNames := getFirstNames()
-			fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
+		// Call function printFirtNames
+		firstNames := getFirstNames()
+		fmt.Printf("List of first mames who booked tickets are: %v\n", firstNames)
 
-			if remainingTickets == 0 {
-				// End the program
-				fmt.Println("Our conference is booked out. please come back next year.")
-				break
-			}
-			//fmt.Printf("List of first names who booked tickets are: %v\n", firstNames)
+		if remainingTickets == 0 {
+			// End the program
+			fmt.Println("Our conference is booked out. please come back next year.")
+			//break
+		}
+		//fmt.Printf("List of first names who booked tickets are: %v\n", firstNames)
 
-		} else {
-			if !isValidName {
-				fmt.Println(" Sorry the first Name or last name is too short, Please enter a valid input")
-			}
-
-			if !isValidEmail {
-				fmt.Println(" Sorry the email entered is invalid, Please enter a valid email")
-			}
-
-			if !isValidTicketsNumber {
-				fmt.Printf(" Sorry the number you entered is invalid, Please enter a valid number")
-			}
+	} else {
+		if !isValidName {
+			fmt.Println(" Sorry the first Name or last name is too short, Please enter a valid input")
 		}
 
-	}
+		if !isValidEmail {
+			fmt.Println(" Sorry the email entered is invalid, Please enter a valid email")
+		}
 
+		if !isValidTicketsNumber {
+			fmt.Printf(" Sorry the number you entered is invalid, Please enter a valid number")
+		}
+	}
+	wg.Wait()
 }
